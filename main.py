@@ -1,31 +1,17 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-import time
-import toml
+import importlib
+import subprocess
+import sys
 
-# 读取 TOML 文件
-config = toml.load('config.toml')
+def check_and_install(package, mirror='https://pypi.org/simple'):
+    try:
+        importlib.import_module(package)
+        print(f"{package} is already installed.")
+    except ImportError:
+        print(f"{package} is not installed. Installing...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package, '-i', mirror])
 
-# 获取值
-username = config['username']
-password = config['password']
-text = config['text']
+mirror_url = 'https://pypi.tuna.tsinghua.edu.cn/simple'
+check_and_install('selenium', mirror=mirror_url)
+check_and_install('toml', mirror=mirror_url)
 
-driver = webdriver.Edge()
-driver.get("https://www.pigai.org")
-
-# 登录
-driver.find_element(By.ID, 'username').send_keys(username)
-driver.find_element(By.ID, 'password').send_keys(password)
-driver.find_element("css selector", "#ulogin img").click()
-
-driver.execute_script("alert('打开你需要写的作文的提交页面，之后回到终端按 Enter 键');")
-input("打开你需要写的作文的提交页面，之后回到终端按 Enter 键")
-text_input = driver.find_element("css selector", "textarea#contents")
-
-text_input.send_keys(text)
-
-# 保持浏览器打开，直到手动关闭
-driver.execute_script("alert('请检查作文并手动提交，之后回到终端按 Enter 键关闭浏览器');")
-input("请检查作文并手动提交，之后回到终端按 Enter 键关闭浏览器")
-driver.quit()  # 关闭浏览器
+subprocess.run(['python', 'auto_input.py'])
