@@ -1,12 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
-import yaml
+import toml
 
-# 读取配置文件
-with open('config.yaml', 'r', encoding='utf-8') as file:
-    config = yaml.safe_load(file)
+# 读取 TOML 文件
+config = toml.load('config.toml')
 
+# 获取值
 username = config['username']
 password = config['password']
 text = config['text']
